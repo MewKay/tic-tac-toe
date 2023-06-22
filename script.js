@@ -30,3 +30,7 @@ const Gameboard = (() => {
     get
   }
 })();
+
+const Player = (name,playerMark) => {
+  return {name,playerMark}
+}
