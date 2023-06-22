@@ -31,9 +31,38 @@ const Gameboard = (() => {
   }
 })();
 
-const Player = (name,playerMark) => {
-  return {name,playerMark}
+const Player = (name,mark) => {
+  return {name,mark}
 }
+
+const Gameplay = (() => {
+  const player1 = Player("Player One","O");
+  const player2 = Player("Player Two", "X");
+  const game = Gameboard.get();
+  let currentPlayer = player1;
+
+  const playMove = (cellPosition) => {
+    const cellToSetMark = game[cellPosition];
+    const markToSet = currentPlayer.mark;
+
+    if(cellToSetMark.getMark() !== "") 
+      return;
+
+    cellToSetMark.setMark(markToSet);
+
+    switchTurn();
+
+    console.log(game[cellPosition].getMark());
+  }
+
+  const switchTurn = () => {
+    currentPlayer = currentPlayer === player1 ? player2 : player1;
+  }
+
+  return {
+    playMove
+  }
+})();
 
 const displayController = (() => {
   const board = Gameboard.get();
