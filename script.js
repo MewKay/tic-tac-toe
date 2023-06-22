@@ -1,5 +1,6 @@
 const Cell = () => {
   let mark = "";
+  let index = undefined;
 
   const setMark = (playerMark) => {
     mark = playerMark;
@@ -8,10 +9,20 @@ const Cell = () => {
   const getMark = () => {
     return mark;
   }
+
+  const setIndex = (indexToSet) => {
+    index = indexToSet;
+  }
+
+  const getIndex = () => {
+    return index;
+  }
   
   return {
     setMark,
-    getMark
+    getMark,
+    setIndex,
+    getIndex
   }
 };
 
@@ -19,7 +30,9 @@ const Gameboard = (() => {
   let gameboard = [];
   
   for (let i=0; i<9; i++) {
-    gameboard.push(Cell());
+    let cell = Cell();
+    cell.setIndex(i);
+    gameboard.push(cell);
   }
 
   const get = () => {
@@ -51,33 +64,52 @@ const Gameplay = (() => {
     cellToSetMark.setMark(markToSet);
 
     switchTurn();
-
-    console.log(game[cellPosition].getMark());
   }
 
   const switchTurn = () => {
     currentPlayer = currentPlayer === player1 ? player2 : player1;
   }
 
+  const getTurn = () => {
+    return `It's ${currentPlayer.name}'s turn now !`;
+  }
+
   return {
-    playMove
+    playMove,
+    getTurn
   }
 })();
 
 const displayController = (() => {
   const board = Gameboard.get();
+  const game = Gameplay;
   const gameContainer = document.querySelector(".game-container");
+  const announcer = document.querySelector(".announcer");
+  
+  const renderAnnouncer = () => {
+    announcer.innerText = game.getTurn();
+  }
 
   const renderCell = (cell) => {
     let cellRender = document.createElement("button");
     cellRender.classList.add("cell");
+    cellRender.id = cell.getIndex();
     cellRender.innerText = cell.getMark();
+    cellRender.addEventListener("click",playRound);
     gameContainer.appendChild(cellRender);   
   }
   
   const updateGameDisplay = () => {
+    renderAnnouncer();
+
     gameContainer.innerHTML = "";
     board.forEach( cell => renderCell(cell));
+  }
+
+  const playRound = (event) => {
+    const cellPosition = event.target.id;
+    game.playMove(cellPosition);
+    updateGameDisplay();
   }
 
   updateGameDisplay();
