@@ -1,0 +1,16 @@
+.game-container {
+  border: 2px solid grey;
+  width: 300px;
+  height: 300px;
+  display: grid;
+  grid: 
+    repeat(3, 1fr) /
+    repeat(3, 1fr);
+}
+
+.cell {
+  border: 2px solid grey;
+  background-color: white;
+  color: grey;
+  font-size: 5rem;
+}

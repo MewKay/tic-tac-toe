@@ -1,5 +1,5 @@
 const Cell = () => {
-  let mark = 0;
+  let mark = "";
 
   const setMark = (playerMark) => {
     mark = playerMark;
@@ -34,3 +34,22 @@ const Gameboard = (() => {
 const Player = (name,playerMark) => {
   return {name,playerMark}
 }
+
+const displayController = (() => {
+  const board = Gameboard.get();
+  const gameContainer = document.querySelector(".game-container");
+
+  const renderCell = (cell) => {
+    let cellRender = document.createElement("button");
+    cellRender.classList.add("cell");
+    cellRender.innerText = cell.getMark();
+    gameContainer.appendChild(cellRender);   
+  }
+  
+  const updateGameDisplay = () => {
+    gameContainer.innerHTML = "";
+    board.forEach( cell => renderCell(cell));
+  }
+
+  updateGameDisplay();
+})();
