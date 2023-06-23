@@ -48,14 +48,76 @@ const Player = (name,mark) => {
   return {name,mark}
 }
 
+const GameOverCheck = (() => {
+  const board = Gameboard.get();
+
+  const checkIfThreeMatches = (firstPosition,secondPosition,thirdPosition) => {
+    const firstMark = board[firstPosition].getMark();
+    const secondMark = board[secondPosition].getMark();
+    const thirdMark = board[thirdPosition].getMark();
+    
+    if(firstMark === "" ||
+        secondMark === "" ||
+        thirdMark === "")
+        return false;
+
+    return ( firstMark === secondMark &&
+              secondMark === thirdMark &&
+              firstMark === thirdMark);
+  }
+  
+  const checkWinHorizontal = () => {
+    for(let i=0; i<board.length; i+=3) {
+      if(checkIfThreeMatches(i,i+1,i+2))
+        return true; 
+    }
+    return false;    
+  }
+
+  const checkWinVertical = () => {
+    for(let i=0; i<3; i++) {
+      if(checkIfThreeMatches(i,i+3,i+6))
+        return true; 
+    }
+    return false;
+  }
+
+  const checkWinDiagonal = () => {
+    if(checkIfThreeMatches(0,4,8) ||
+        checkIfThreeMatches(2,4,6))
+      return true; 
+    
+    return false;
+  }
+
+  const checkWin = () => {
+    if(checkWinHorizontal() ||
+      checkWinVertical() ||
+      checkWinDiagonal())
+      return true;
+    
+    return false;
+  }
+
+  return {
+    checkWin
+  }
+  
+})();
+
+
 const Gameplay = (() => {
   const player1 = Player("Player One","O");
   const player2 = Player("Player Two", "X");
-  const game = Gameboard.get();
+  const board = Gameboard.get();
+  const gameOver = GameOverCheck;
   let currentPlayer = player1;
 
   const playMove = (cellPosition) => {
-    const cellToSetMark = game[cellPosition];
+    if(gameOver.checkWin())
+      return;
+
+    const cellToSetMark = board[cellPosition];
     const markToSet = currentPlayer.mark;
 
     if(cellToSetMark.getMark() !== "") 
@@ -63,7 +125,8 @@ const Gameplay = (() => {
 
     cellToSetMark.setMark(markToSet);
 
-    switchTurn();
+    if(!gameOver.checkWin())
+      switchTurn();
   }
 
   const switchTurn = () => {
@@ -74,20 +137,30 @@ const Gameplay = (() => {
     return `It's ${currentPlayer.name}'s turn now !`;
   }
 
+  const getCurrentPlayer = () => {
+    return currentPlayer.name;
+  }
+
   return {
     playMove,
-    getTurn
+    getTurn,
+    getCurrentPlayer
   }
 })();
 
 const displayController = (() => {
   const board = Gameboard.get();
   const game = Gameplay;
+  const gameOver = GameOverCheck;
   const gameContainer = document.querySelector(".game-container");
   const announcer = document.querySelector(".announcer");
   
   const renderAnnouncer = () => {
     announcer.innerText = game.getTurn();
+  }
+
+  const renderWinner = () => {
+    announcer.innerText = `${game.getCurrentPlayer()} is the winner !`;
   }
 
   const renderCell = (cell) => {
@@ -109,7 +182,9 @@ const displayController = (() => {
   const playRound = (event) => {
     const cellPosition = event.target.id;
     game.playMove(cellPosition);
-    updateGameDisplay();
+    updateGameDisplay();    
+    if(gameOver.checkWin())
+      renderWinner();
   }
 
   updateGameDisplay();
