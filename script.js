@@ -115,8 +115,8 @@ const GameOverCheck = (() => {
 })();
 
 const Gameplay = (() => {
-  const player1 = Player("Player One","O");
-  const player2 = Player("Player Two", "X");
+  const player1 = Player("Player 1","O");
+  const player2 = Player("Player 2", "X");
   const board = Gameboard.get();
   const gameOver = GameOverCheck;
   let currentPlayer = player1;
@@ -149,10 +149,20 @@ const Gameplay = (() => {
     return currentPlayer.name;
   }
 
+  const setPlayerOneName = (playerOneName) => {
+    player1.name = playerOneName;
+  }
+
+  const setPlayerTwoName = (playerTwoName) => {
+    player2.name = playerTwoName;
+  }
+
   return {
     playMove,
     getTurn,
-    getCurrentPlayer
+    getCurrentPlayer,
+    setPlayerOneName,
+    setPlayerTwoName
   }
 })();
 
@@ -160,9 +170,37 @@ const displayController = (() => {
   const board = Gameboard.get();
   const game = Gameplay;
   const gameOver = GameOverCheck;
+  const gameDisplayer = document.querySelector(".game-display");
+  const nameInputs = document.querySelector(".name-input");
   const gameContainer = document.querySelector(".game-container");
   const announcer = document.querySelector(".announcer");
+  const playerOneInput = document.querySelector("#player-1-name");
+  const playerTwoInput = document.querySelector("#player-2-name");
+  const startButton = document.querySelector("#btn-starting-game"); 
   
+  const getPlayersNames = () => {
+    const playerOneName = playerOneInput.value;
+    const playerTwoName = playerTwoInput.value;
+
+    if(playerOneName === "" ||
+        playerTwoName === "")
+        return;
+
+    game.setPlayerOneName(playerOneName);
+    game.setPlayerTwoName(playerTwoName);
+  }
+  
+  const hideNamesInputs = () => {
+    nameInputs.style.display = "none";
+    startButton.style.display = "none";
+    playerOneInput.value = "";
+    playerTwoInput.value = "";
+  }
+
+  const showGame = () => {
+    gameDisplayer.style.display = "block";
+  }
+
   const renderAnnouncer = () => {
     announcer.innerText = game.getTurn();
   }
@@ -174,7 +212,7 @@ const displayController = (() => {
   const renderTieMessage = () => {
     announcer.innerText = "Welp, it's a tie !";
   }
-
+  
   const renderCell = (cell) => {
     let cellRender = document.createElement("button");
     cellRender.classList.add("cell");
@@ -190,16 +228,24 @@ const displayController = (() => {
     gameContainer.innerHTML = "";
     board.forEach( cell => renderCell(cell));
   }
-
+  
   const playRound = (event) => {
     const cellPosition = event.target.id;
     game.playMove(cellPosition);
     updateGameDisplay();    
-    if(gameOver.checkWin())
-      renderWinner();
+    if(gameOver.checkWin())  
+    renderWinner();
     if(gameOver.checkTie())
-      renderTieMessage();
+    renderTieMessage();
   }
 
-  updateGameDisplay();
+  const playNewGame = (event) => {
+    getPlayersNames();
+    updateGameDisplay();
+    hideNamesInputs();
+    showGame();
+  }
+
+  startButton.addEventListener("click",playNewGame);
+
 })();

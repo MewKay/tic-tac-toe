@@ -10,9 +10,21 @@
 </head>
 <body>
   <h1>TIC TAC TOE</h1>
-  <div class="announcer"></div>
-  <div class="game-container">
-
+  <div class="name-input">
+    <div class="player-1">
+      <label for="player-1-name">Enter name:</label>
+      <input id="player-1-name" type="text" maxlength="20" placeholder="Player 1" />
+    </div>
+    <div class="player-2">
+      <label for="player-2-name">Enter name:</label>
+      <input id="player-2-name" type="text" maxlength="20" placeholder="Player 2" />
+    </div>
   </div>
+  <div class="game-display">
+    <div class="announcer"></div>
+    <div class="game-container">
+    </div>
+  </div>
+  <button id="btn-starting-game">Start</button>
 </body>
 </html>
