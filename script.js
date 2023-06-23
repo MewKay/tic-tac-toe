@@ -39,8 +39,15 @@ const Gameboard = (() => {
     return gameboard;
   }
 
+  const clear = () => {
+    for (let cell of gameboard) {
+      cell.setMark("");
+    }
+  }
+
   return {
-    get
+    get,
+    clear
   }
 })();
 
@@ -157,12 +164,20 @@ const Gameplay = (() => {
     player2.name = playerTwoName;
   }
 
+  const resetGame = () => {
+    Gameboard.clear();
+    currentPlayer = player1;
+    setPlayerOneName("Player One");
+    setPlayerTwoName("Player Two");
+  }
+
   return {
     playMove,
     getTurn,
     getCurrentPlayer,
     setPlayerOneName,
-    setPlayerTwoName
+    setPlayerTwoName,
+    resetGame
   }
 })();
 
@@ -189,6 +204,12 @@ const displayController = (() => {
     game.setPlayerOneName(playerOneName);
     game.setPlayerTwoName(playerTwoName);
   }
+
+  const showNamesInputs = () => {
+    nameInputs.style.display = "block";
+    startButton.style.display = "block";
+    startButton.innerText = "Start";
+  }
   
   const hideNamesInputs = () => {
     nameInputs.style.display = "none";
@@ -199,6 +220,10 @@ const displayController = (() => {
 
   const showGame = () => {
     gameDisplayer.style.display = "block";
+  }
+
+  const hideGame = () => {
+    gameDisplayer.style.display = "none";  
   }
 
   const renderAnnouncer = () => {
@@ -228,15 +253,33 @@ const displayController = (() => {
     gameContainer.innerHTML = "";
     board.forEach( cell => renderCell(cell));
   }
+
+  const restart = (event) => {
+    showNamesInputs();
+    hideGame();
+    game.resetGame();
+    startButton.removeEventListener("click",restart);
+  }
+
+  const offerRestart = () => {
+    startButton.style.display = "block";
+    startButton.innerText = "Restart ?";
+    startButton.addEventListener("click",restart)
+  }
   
   const playRound = (event) => {
     const cellPosition = event.target.id;
     game.playMove(cellPosition);
     updateGameDisplay();    
-    if(gameOver.checkWin())  
-    renderWinner();
-    if(gameOver.checkTie())
-    renderTieMessage();
+    if(gameOver.checkWin()) { 
+      renderWinner();
+      offerRestart();
+    }
+    else if(gameOver.checkTie()) {
+      renderTieMessage();
+      offerRestart();
+    }
+    
   }
 
   const playNewGame = (event) => {
