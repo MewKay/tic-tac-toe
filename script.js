@@ -99,12 +99,20 @@ const GameOverCheck = (() => {
     return false;
   }
 
+  const checkTie = () => {
+    for (const cell of board) {
+      if(cell.getMark() === "") 
+        return false;
+    }
+    return true;
+  }
+
   return {
-    checkWin
+    checkWin,
+    checkTie
   }
   
 })();
-
 
 const Gameplay = (() => {
   const player1 = Player("Player One","O");
@@ -163,6 +171,10 @@ const displayController = (() => {
     announcer.innerText = `${game.getCurrentPlayer()} is the winner !`;
   }
 
+  const renderTieMessage = () => {
+    announcer.innerText = "Welp, it's a tie !";
+  }
+
   const renderCell = (cell) => {
     let cellRender = document.createElement("button");
     cellRender.classList.add("cell");
@@ -185,6 +197,8 @@ const displayController = (() => {
     updateGameDisplay();    
     if(gameOver.checkWin())
       renderWinner();
+    if(gameOver.checkTie())
+      renderTieMessage();
   }
 
   updateGameDisplay();
